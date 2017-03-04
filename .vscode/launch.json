@@ -1,0 +1,31 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C++ Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/BASIC.exe",
+            "targetArchitecture": "x86",
+            "miDebuggerPath":"D:\\Unchinese software\\VSC Projects\\MinGW32\\bin\\gdb.exe",
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",
+            "externalConsole": true,
+            "preLaunchTask": "g++"
+        },
+        {
+            "name": "Python Launch",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": false,
+            "pythonPath": "${config.python.pythonPath}",
+            "program": "${file}",
+            "cwd": "${workspaceRoot}",
+            "debugOptions": [
+                "WaitOnAbnormalExit",
+                "WaitOnNormalExit",
+                "RedirectOutput"
+            ]
+        }
+    ]
+}

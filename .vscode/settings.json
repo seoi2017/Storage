@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "cstdlib": "cpp",
+        "cstdio": "cpp",
+        "cstring": "cpp",
+        "iosfwd": "cpp",
+        "random": "cpp"
+    },
+    "background.enabled": true,
+    "background.useDefault": false,
+    "background.customImages": [
+        "D:/Unchinese software/VSC Projects/OI/images/img.png"
+    ],
+    "python.linting.pylintEnabled": false
+}
