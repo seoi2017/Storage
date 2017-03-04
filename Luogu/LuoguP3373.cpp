@@ -1,8 +1,4 @@
-#include<cstdio>
-#include<cstdlib>
-#include<cstring>
-#include<algorithm>
-#include<cmath>
+#include<bits/stdc++.h>
 #define lson(x) (x<<1)
 #define rson(x) ((x<<1)+1)
 #define N 131072
