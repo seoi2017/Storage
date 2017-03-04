@@ -15,5 +15,5 @@
             "message": 5
         }
     },
-    "showOutput": "never"
+    "showOutput": "always"
 }
