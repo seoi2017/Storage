@@ -1,3 +1,3 @@
 while(True):
-    print("Hello World!")
+    print("LYY! YYL! LYL! YLY!")
     pass
