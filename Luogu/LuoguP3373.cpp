@@ -1,6 +1,16 @@
-#include<bits/stdc++.h>
+#include<bits/stdc++.h>//万能头文件
+#define end(x) (x>=get_bit(1))
+#define lazy(x) (lazy[x])
+#define mlaz(x) (lazy_mul[x])
+#define sum(x) (node[x])
 #define lson(x) (x<<1)
 #define rson(x) ((x<<1)+1)
+#define nls(x) (node[lson(x)])
+#define nrs(x) (node[rson(x)])
+#define lazyls(x) (lazy[lson(x)])
+#define lazyrs(x) (lazy[rson(x)])
+#define mlazls(x) (lazy_mul[lson(x)])
+#define mlazrs(x) (lazy_mul[rson(x)])
 #define N 131072
 using namespace std;
 typedef int integer;
@@ -19,52 +29,53 @@ struct segtree{
     inline integer get_node(integer x){
         return (get_bit(1)+x-1);
     }
+    inline integer range(integer x){
+        return (min((integer)get_node(n),rc[x])-lc[x]+1);
+    }
     void build(){
         for(integer i=get_bit(1);i<=get_bit(1)*2-1;i++)lc[i]=i,rc[i]=i,mid[i]=i;
         for(integer i=get_bit(1)-1;i!=0;i--)lc[i]=lc[lson(i)],rc[i]=rc[rson(i)],mid[i]=(rc[i]+lc[i])/2,node[i]=node[lson(i)]+node[(lson(i))+1];
     }
     void pushdown(integer x){
-        if(lazy[x]!=0){
-            node[x]+=(min((integer)get_node(n),rc[x])-lc[x]+1)*lazy[x];
-            lazy[lson(x)]+=lazy[x],lazy[(lson(x))+1]+=lazy[x];
-            lazy[x]=0;
-        }
-        //===============
-        if(lazy_mul[x]!=0){
-            node[x]*=lazy_mul[x];
-            lazy_mul[lson(x)]+=lazy_mul[x],lazy_mul[(lson(x))+1]+=lazy_mul[x];
-            lazy_mul[x]=0;
-        }
+        if(lazy[x]==0 && lazy_mul[x]==1)return;
+        if(end(x)){lazy_mul[x]=1,lazy[x]=0;return;}
+        nls(x)=(nls(x)*mlaz(x)+lazy(x)*range(lson(x)))%mod;
+        nrs(x)=(nrs(x)*mlaz(x)+lazy(x)*range(rson(x)))%mod;
+        mlazls(x)=(mlazls(x)*mlaz(x))%mod;
+        lazyls(x)=(lazyls(x)*mlaz(x)+lazy(x))%mod;
+        mlazrs(x)=(mlazrs(x)*mlaz(x))%mod;
+        lazyrs(x)=(lazyrs(x)*mlaz(x)+lazy(x))%mod;
+        mlaz(x)=1,lazy(x)=0;
     }
     void update(integer x,integer l,integer r,integer s){
-        if(x>=get_bit(1)){if(lazy[x]!=0){node[x]+=lazy[x],lazy[x]=0;}node[x]+=s;return;}
-        if(l==lc[x] && r==rc[x]){lazy[x]+=s;return;}
         pushdown(x);
-        node[x]+=((r-l+1)*s);
-        if(r<=mid[x])update(lson(x),l,r,s);
-        else if(l>mid[x])update((lson(x))+1,l,r,s);
-        else update(lson(x),l,mid[x],s),update((lson(x))+1,mid[x]+1,r,s);
+        if(l<=lson(x) && rson(x)<=r){
+            sum(x)=(sum(x)+s*(range(x)))%mod;
+            lazy(x)=s%mod;
+            return;
+        }
+        if(l<=mid[x])update(lson(x),l,r,s);
+        if(mid[x]<r)update(rson(x),l,r,s);
+        sum(x)=(nls(x)+nrs(x))%mod;
     }
     void update_mul(integer x,integer l,integer r,integer s){
-        if(x>=get_bit(1)){if(lazy_mul[x]!=0){node[x]*=lazy_mul[x],lazy_mul[x]=0;}node[x]*=s;return;}
-        if(l==lc[x] && r==rc[x]){lazy_mul[x]+=s;return;}
         pushdown(x);
-        node[x]*=s;
-        if(r<=mid[x])update_mul(lson(x),l,r,s);
-        else if(l>mid[x])update_mul((lson(x))+1,l,r,s);
-        else update_mul(lson(x),l,mid[x],s),update_mul((lson(x))+1,mid[x]+1,r,s);
+        if(l<=lson(x) && rson(x)<=r){
+            sum(x)=(sum(x)*s)%mod;
+            mlaz(x)=s%mod;
+            return;
+        }
+        if(l<=mid[x])update_mul(lson(x),l,r,s);
+        if(mid[x]<r)update_mul(rson(x),l,r,s);
+        sum(x)=(nls(x)+nrs(x))%mod;
     }
     integer query(integer x,integer l,integer r){
-        integer ans=0;
-        if(x>=get_bit(1)){if(lazy[x]!=0){node[x]+=lazy[x],lazy[x]=0;}if(lazy_mul[x]!=0){node[x]*=lazy_mul[x],lazy_mul[x]=0;}ans+=node[x];}
-        else if(l==lc[x] && r==rc[x])ans+=(node[x]+(rc[x]-lc[x]+1)*lazy[x]);
-        else{
-            if(lazy[x]!=0 || lazy_mul[x]!=0)pushdown(x);
-            if(r<=mid[x])ans+=query(lson(x),l,r);
-            else if(l>mid[x])ans+=query((lson(x))+1,l,r);
-            else ans+=query(lson(x),l,mid[x]),ans+=query((lson(x))+1,mid[x]+1,r);
-        }
-        return ans;
+        int ans=0;
+        pushdown(x);
+        if(l<=lson(x) && rson(x)<=r)return sum(x);
+        if(l<=mid[x])ans+=query(lson(x),l,r);
+        if(mid[x]<r)ans+=query(rson(x),l,r);
+        return ans%mod;
     }
     void debug_out(){
         for(int i=1;i<=get_bit(1)-1;i++){
@@ -82,10 +93,9 @@ int main(){
     while(ask--){
         integer command,x,y,o;
         scanf("%d",&command);
-        if(command==1)scanf("%d%d%d",&x,&y,&o),tree.update_mul(1,tree.get_node(x),tree.get_node(y),o),tree.debug_out();
-        else if(command==2)scanf("%d%d%d",&x,&y,&o),tree.update(1,tree.get_node(x),tree.get_node(y),o);
-        else if(command==3)scanf("%d%d",&x,&y),printf("%d\n",tree.query(1,tree.get_node(x),tree.get_node(y))),tree.debug_out();
-        //else tree.debug_out();
+        if(command==1)scanf("%d%d%d",&x,&y,&o),tree.update_mul(1,x,y,o);
+        else if(command==2)scanf("%d%d%d",&x,&y,&o),tree.update(1,x,y,o);
+        else if(command==3)scanf("%d%d",&x,&y),printf("%d\n",tree.query(1,x,y));
     }
     system("pause");
     return 0;
