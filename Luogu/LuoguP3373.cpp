@@ -1,4 +1,4 @@
-#include<bits/stdc++.h>//万能头文件
+#include<bits/stdc++.h>//万能头文件 TLE...
 #define lazy(x) (lazy[x])
 #define mlaz(x) (lazy_mul[x])
 #define sum(x) (node[x])
