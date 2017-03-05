@@ -17,15 +17,17 @@ struct segtree{
         for(int i=get_bit(1)-1;i>=1;i--)lc[i]=lc[lson(i)],rc=rs[lson(i)],lazy[i]=0,node[i]=(node[lson(i)]|node[rson(i)]);
     }
     void pushdown(int x){
-        
+        lazy[lson(x)]=lazy[x];
+        lazy[rson(x)]=lazy[x];
+        node[x]=lazy[x];
     }
     void update(int x,int l,int r,int s){
         if(x>=get_bit(1)){
-            if(lazy[x]!=0)node[x]|=lazy[x],lazy[x]=0;
+            if(lazy[x]!=0)node[x]=lazy[x],lazy[x]=0;
             return;
         }
         if(rc[x]==r && lc[x]==l){
-            lazy[x]|=s;
+            lazy[x]=s;
         }
         pushdown(x);
         int mid=(lc[x]+rc[x])>>1;
