@@ -4,7 +4,9 @@
         "cstdio": "cpp",
         "cstring": "cpp",
         "iosfwd": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "ios": "cpp",
+        "xiosbase": "cpp"
     },
     "python.linting.pylintEnabled": false
 }
