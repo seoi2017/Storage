@@ -4,41 +4,50 @@
 #include<algorithm>
 #include<cstring>
 #include<cmath>
+#define A 0
+#define B 1
 using namespace std;
 const int N=10010;
-string a,b,c;
-int f[N][N],s[N];
-void clear(){
-    a.clear();
-    b.clear();
-    c.clear();
-    for(int i=0;i<N;i++){
-        s[i]=0;
-        for(int j=0;j<N;j++){
-            f[i][j]=0;
+char c[2][N];
+int len[2];
+struct dp_t{
+    int d[2][N],f[2][N];
+};
+dp_t s[30];
+int dp[N][N];
+void find(){
+    for(int i=0;i<26;i++){
+        for(int k=0;k<2;k++){
+            int st=-1,et=-1;
+            for(int j=0;j<len[i];j++){
+                if(c[k][j]-'A'==i)st=j;
+            }
+            for(int j=len[i]-1;j>=0;j--){
+                if(c[k][j]-'A'==i)et=j;
+            }
+            if(st!=-1){
+
+            }
         }
     }
 }
-int dp(){
-    return ;
-}
 int main(){
-    ios::sync_with_stdio(false);
     freopen("output.txt","w",stdout);
     int cases;
-    cin>>cases;
+    scanf("%d",&cases);
     while(cases--){
-        clear();
-        char temp;
-        while(cin>>temp && temp!='\n'){
-            s[temp]++;
-            a+=temp;
+        gets(c[A]),len[A]=strlen(c[A]);
+        gets(c[B]),len[B]=strlen(c[B]);
+        memset(s,0,sizeof(s));
+        memset(dp[0],0,sizeof(dp[0]));
+        dp[0][0]=0;
+        find();
+        for(int i=0;i<len[A];i++){
+            memset(dp[i+1],0,sizeof(dp[i+1]));
+            for(int j=0;j<len[B];j++){
+                if(i<len[A])
+            }
         }
-        while(cin>>temp && temp!='\n'){
-            s[temp]++;
-            b+=temp;
-        }
-        cout<<dp()<<endl;
     }
     return 0;
 }
