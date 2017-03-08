@@ -1,6 +1,4 @@
-//KMP算法模板
-//2017/2/27 18:31
-//Powered by Inv.
+//none-testing(WA)...
 #include<iostream>
 #include<cstdio>
 #include<cstring>

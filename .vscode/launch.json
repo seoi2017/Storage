@@ -14,6 +14,18 @@
             "preLaunchTask": "g++"
         },
         {
+            "name": "C++ Launch(Ubuntu)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/BASIC.exe",
+            "targetArchitecture": "amd64",
+            "miDebuggerPath":"/usr/bin/gdb",
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",
+            "externalConsole": true,
+            "preLaunchTask": "g++"
+        },
+        {
             "name": "Python Launch",
             "type": "python",
             "request": "launch",

@@ -10,6 +10,16 @@
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""
             }
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "/usr/include/c++/5/*"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
         }
     ]
 }
