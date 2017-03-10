@@ -1,1 +1,13 @@
-45 56
+1
+8 6
+ababab
+ababba
+bbbbbb
+abbaab
+abaaaa
+bababa
+bbbbbb
+baaaab
+2 2
+ba
+ba
