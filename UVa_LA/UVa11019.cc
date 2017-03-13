@@ -3,41 +3,44 @@
 #include<cstring>
 #include<algorithm>
 #include<iostream>
-#define MAXNODE 110
 #define MAXCHAR 26
-#define num(x) (x-'a')
-#define ms(x,y) memset(x,y,sizeof(x))
 #define no -1
 using namespace std;
 int n,m,a,b;
 int top=0;
-int fail[MAXNODE*MAXNODE],nxt[MAXNODE*MAXNODE][MAXCHAR],end[MAXNODE*MAXNODE];
-char text[MAXNODE*10][MAXNODE*10];
-char mode[MAXNODE][MAXNODE];
-int cnt[MAXNODE*10][MAXNODE*10],nrt[MAXNODE];
+int queue[111000],head=0,tail=0;
+int fail[111000],nxt[111000][MAXCHAR],ent[111000];
+char text[1010][1010];
+char mode[110][110];
+int cnt[1010][1010],nrt[110];
 void insert_trie(char str[],int root,int number){
     int k=root;
     int s=0,index;
-    while(str[s]){
-        index=num(str[s]);
+    while(str[s]!='\0'){
+        index=str[s]-'a';
         if(nxt[k][index]==no){
             nxt[k][index]=++top;
+            for(int i=0;i<MAXCHAR;i++)nxt[top][i]=-1;
+            //memset(nxt[top],-1,sizeof(nxt[top]));
         }
         k=nxt[k][index];
         //===
         fail[k]=-1;
-        end[k]=0;
+        ent[k]=0;
         //===
         s++;
     }
-    end[k]=number;
+    ent[k]=number;
 }
 void build_AC_Automata(int root){
     fail[root]=-1;
-    int queue[MAXNODE],head=0,tail=0;
     queue[++head]=root;
-    while(head!=tail){
+    //queue<int> Q;
+    //Q.push(root);
+    while(head!=tail/*!Q.empty()*/){
         int temp=queue[++tail];
+        //int temp=Q.front();
+        //Q.pop();
         int fail_ptr=no;
         for(int i=0;i<MAXCHAR;i++){
             if(nxt[temp][i]!=no){
@@ -58,48 +61,53 @@ void build_AC_Automata(int root){
                     }
                 }
                 queue[++head]=nxt[temp][i];
+                //Q.push(nxt[temp][i]);
             }
         }
     }
 }
 void query(int root,char str[],int line){
-    int len=strlen(str);
     int k=root;
     int s=0,index;
     while(str[s]){
-        index=num(str[s]);
+        index=str[s]-'a';
         while((nxt[k][index]==no)&&(k!=root))k=fail[k];
         k=nxt[k][index];
         k=((k==no)?root:k);
         int temp=k;
-        while((temp!=root)/*&&(vis[temp]==false)*/){
-            if(end[temp]!=0){
-                cnt[line-(end[temp]-1)][s-strlen(mode[end[temp]]-1)]++;
-                for(int i=nrt[temp];i!=0;i=nrt[i]){
-                   cnt[line-(end[i]-1)][s-strlen(mode[end[i]]-1)]++; 
+        while(temp!=root){
+            if(ent[temp]!=0){
+                if((line-(ent[temp]-1))>0)cnt[line-(ent[temp]-1)][s-strlen(mode[ent[temp]]-1)]++;
+                //else printf("Overflow!\n");
+                for(int i=nrt[ent[temp]];i!=0;i=nrt[i]){
+                   if((line-(i-1))>0)cnt[line-(i-1)][s-strlen(mode[ent[temp]]-1)]++;
+                   //else printf("Overflow!\n");
                 }
             }
-            //vis[temp]=true;
             temp=fail[temp];
         }
         s++;
     }
 }
-inline void clear(){
+void clear(){
     top=0;
-    ms(nxt,-1);
-    ms(cnt,0);
-    ms(nrt,0);
+    for(int i=0;i<MAXCHAR;i++)nxt[0][i]=-1;
+    //memset(nxt[0],-1,sizeof(nxt[0]));
+    //memset(nrt,0,sizeof(nrt));
     n=m=a=b=0;
+    head=tail=0;
 }
-inline void input(){
+void input(){
     scanf("%d%d",&n,&m);
     for(int i=1;i<=n;i++){
+        //memset(cnt[i],0,sizeof(cnt[i]));
+        for(int j=0;j<m;j++)cnt[i][j]=0;
         scanf("%s",text[i]);
     }
     scanf("%d%d",&a,&b);
     for(int i=1;i<=a;i++){
         scanf("%s",mode[i]);
+        nrt[i]=0;
         int only=true;
         for(int j=i-1;j>=1;j--){
             if(strcmp(mode[i],mode[j])==0){
@@ -112,33 +120,23 @@ inline void input(){
     }
     build_AC_Automata(0);
 }
-inline void solve(){
+void solve(){
     for(int i=1;i<=n;i++){
         query(0,text[i],i);
     }
-    
+    /*
     for(int i=1;i<=a;i++){
         printf("[%d]\n",nrt[i]);
     }
-    
-    register int ans=0;
-    for(int i=0;i<=n;i++,printf("\n")){
-        for(int j=0;j<=m;j++){
-            printf("%d ",cnt[i][j]);
+    */
+    int ans=0;
+    for(int i=1;i<=n;i++/*,printf("\n")*/){
+        for(int j=0;j<m;j++){
+            //printf("%d ",cnt[i][j]);
             if(cnt[i][j]==a)ans++;
         }
     }
     printf("%d\n",ans);
-}
-void debug(){
-    scanf("%d",&n);
-    for(int i=1;i<=n;i++){
-        scanf("%s",mode[i]);
-        insert_trie(mode[i],0,i);
-    }
-    build_AC_Automata(0);
-    scanf("%s",text[1]);
-    query(0,text[1],0);
 }
 int main(){
     freopen("input.txt","r",stdin);
