@@ -52,7 +52,15 @@
         "deque": "cpp",
         "list": "cpp",
         "vector": "cpp",
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "xhash": "cpp",
+        "xtree": "cpp",
+        "xcomplex": "cpp",
+        "utility": "cpp",
+        "tuple": "cpp",
+        "istream": "cpp",
+        "ostream": "cpp",
+        "streambuf": "cpp"
     },
     "python.linting.pylintEnabled": false
 }
