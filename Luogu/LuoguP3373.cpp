@@ -1,99 +1,72 @@
-#include<bits/stdc++.h>//万能头文件 TLE...
-#define lazy(x) (lazy[x])
-#define mlaz(x) (lazy_mul[x])
-#define sum(x) (node[x])
-#define lson(x) (x<<1)
-#define rson(x) ((x<<1)+1)
-#define nls(x) (node[lson(x)])
-#define nrs(x) (node[rson(x)])
-#define lazyls(x) (lazy[lson(x)])
-#define lazyrs(x) (lazy[rson(x)])
-#define mlazls(x) (lazy_mul[lson(x)])
-#define mlazrs(x) (lazy_mul[rson(x)])
-#define N 131072
-using namespace std;
-typedef long long integer;
-struct segtree{
-    integer n,mod,node[N*4],lc[N*4],rc[N*4],mid[N*4],lazy[N*4],lazy_mul[N*4];
-    segtree(){
-        memset(node,0,sizeof(node));
-        memset(lazy,0,sizeof(lazy));
-        memset(lazy_mul,0,sizeof(lazy_mul));
+#include<bits/stdc++.h>//Accepted!
+#define mid(x,y) (x+y>>1)
+#define root (&seg[1])
+#define lson (now->lc)
+#define rson (now->rc)
+#define pushup (now->s=(now->lc->s+now->rc->s)%mod)
+using namespace std;typedef long long int ull_t;
+const int N=100010,M=100010;int n,m,top=0,ind[N];ull_t mod;
+struct segnode_t{ull_t s,add,mul;int l,r;segnode_t *lc,*rc,*fa;}seg[N<<2];
+inline int build(int l,int r){
+    int temp=++top;segnode_t *now=&seg[temp];
+    now->s=0,now->add=0,now->mul=1;now->l=l,now->r=r;now->fa=NULL;
+    if(l!=r)lson=&seg[build(l,mid(l,r))],rson=&seg[build(mid(l,r)+1,r)],lson->fa=rson->fa=now;
+    else lson=NULL,rson=NULL,ind[l]=temp;
+    return temp;
+}
+inline void over_build(segnode_t *now){
+    now->s=lson->s+rson->s;
+    if(now->fa!=NULL)over_build(now->fa);
+}
+inline void pushdown(segnode_t *now){
+    lson->mul=(lson->mul*now->mul)%mod,rson->mul=(rson->mul*now->mul)%mod;
+    lson->add=(lson->add*now->mul+now->add)%mod,rson->add=(rson->add*now->mul+now->add)%mod;
+    lson->s=(lson->s*now->mul+now->add*(lson->r-lson->l+1))%mod,rson->s=(rson->s*now->mul+now->add*(rson->r-rson->l+1))%mod;
+    now->add=0,now->mul=1;return;
+}
+inline void add_update(segnode_t *now,int l,int r,ull_t add){
+    if(now->l==l && now->r==r){
+        now->add=(now->add+add)%mod;
+        now->s=(((ull_t)(now->r-now->l+1)*add)%mod+now->s)%mod;
+        return;
     }
-    inline integer get_bit(integer x){
-        integer M=1;
-        while(M<n)M<<=1;
-        return M+(x-1);
+    if(now->add!=0 || now->mul!=1)pushdown(now);
+    if(l<=lson->r)add_update(lson,l,min(lson->r,r),add);
+    if(r>=rson->l)add_update(rson,max(rson->l,l),r,add);
+    pushup;return;
+}
+inline void mul_update(segnode_t *now,int l,int r,ull_t mul){
+    if(now->l==l && now->r==r){
+        now->mul=(now->mul*mul)%mod,now->add=(now->add*mul)%mod;
+        now->s=(now->s*mul)%mod;
+        return;
     }
-    inline integer get_node(integer x){
-        return (get_bit(1)+x-1);
+    if(now->add!=0 || now->mul!=1)pushdown(now);
+    if(l<=lson->r)mul_update(lson,l,min(lson->r,r),mul);
+    if(r>=rson->l)mul_update(rson,max(rson->l,l),r,mul);
+    pushup;return;
+}
+inline ull_t query(segnode_t *now,int l,int r){
+    if(now->l==l && now->r==r)return now->s%mod;
+    if(now->add!=0 || now->mul!=1)pushdown(now);
+    ull_t ans=0;
+    if(l<=lson->r)ans=(ans+query(lson,l,min(lson->r,r)))%mod;
+    if(r>=rson->l)ans=(ans+query(rson,max(rson->l,l),r))%mod;
+    pushup;return ans;
+}
+void solve(){
+    ull_t temp;scanf("%d%d%lld",&n,&m,&mod),build(1,n);
+    for(int i=1;i<=n;i++)scanf("%lld",&temp),seg[ind[i]].s=temp,over_build(seg[ind[i]].fa);
+    for(int i=1;i<=m;i++){
+        int x,y;ull_t z;scanf("%lld",&temp);
+        if(temp==1)/*mul*/scanf("%d%d%lld",&x,&y,&z),mul_update(root,x,y,z);
+        else if(temp==2)/*add*/scanf("%d%d%lld",&x,&y,&z),add_update(root,x,y,z);
+        else if(temp==3)/*query%mod*/scanf("%d%d",&x,&y),printf("%lld\n",query(root,x,y)%mod);
     }
-    inline integer range(integer x){
-        return (min((integer)get_node(n),rc[x])-lc[x]+1);
-    }
-    inline bool end(integer x){
-        return (x>=get_bit(1));
-    }
-    void build(){
-        for(integer i=get_bit(1);i<=get_bit(1)*2-1;i++)lc[i]=i,rc[i]=i,mid[i]=i,lazy_mul[i]=1;
-        for(integer i=get_bit(1)-1;i!=0;i--)lc[i]=lc[lson(i)],rc[i]=rc[rson(i)],mid[i]=(rc[i]+lc[i])/2,node[i]=node[lson(i)]+node[rson(i)],lazy_mul[i]=1;
-    }
-    void pushdown(integer x){
-        if(lazy[x]==0 && lazy_mul[x]==1)return;
-        if(end(x)){lazy_mul[x]=1,lazy[x]=0;return;}
-        nls(x)=(nls(x)*mlaz(x)+lazy(x)*range(lson(x)))%mod;
-        nrs(x)=(nrs(x)*mlaz(x)+lazy(x)*range(rson(x)))%mod;
-        mlazls(x)=(mlazls(x)*mlaz(x))%mod;
-        lazyls(x)=(lazyls(x)*mlaz(x)+lazy(x))%mod;
-        mlazrs(x)=(mlazrs(x)*mlaz(x))%mod;
-        lazyrs(x)=(lazyrs(x)*mlaz(x)+lazy(x))%mod;
-        mlaz(x)=1,lazy(x)=0;
-    }
-    void update(integer x,integer l,integer r,integer s){
-        pushdown(x);
-        if(l<=lc[x] && rc[x]<=r){
-            sum(x)=(sum(x)+s*(range(x)))%mod;
-            lazy(x)=s%mod;
-            return;
-        }
-        if(l<=mid[x])update(lson(x),l,r,s);
-        if(mid[x]<r)update(rson(x),l,r,s);
-        sum(x)=(nls(x)+nrs(x))%mod;
-    }
-    void update_mul(integer x,integer l,integer r,integer s){
-        pushdown(x);
-        if(l<=lc[x] && rc[x]<=r){
-            sum(x)=(sum(x)*s)%mod;
-            mlaz(x)=s%mod;
-            return;
-        }
-        if(l<=mid[x])update_mul(lson(x),l,r,s);
-        if(mid[x]<r)update_mul(rson(x),l,r,s);
-        sum(x)=(nls(x)+nrs(x))%mod;
-    }
-    integer query(integer x,integer l,integer r){
-        int ans=0;
-        pushdown(x);
-        if(l<=lc[x] && rc[x]<=r)return sum(x);
-        if(l<=mid[x])ans+=query(lson(x),l,r);
-        if(mid[x]<r)ans+=query(rson(x),l,r);
-        return ans%mod;
-    }
-}tree;
+}
 int main(){
-    integer ask;
-    scanf("%lld%lld%lld",&tree.n,&ask,&tree.mod);
-    for(integer i=tree.get_bit(1);i<=tree.get_bit(1)+(tree.n-1);i++){
-        scanf("%lld",&tree.node[i]);
-    }
-    tree.build();
-    while(ask--){
-        integer command,x,y,o;
-        scanf("%lld",&command);
-        if(command==1)scanf("%lld%lld%lld",&x,&y,&o),tree.update_mul(1,tree.get_node(x),tree.get_node(y),o);
-        else if(command==2)scanf("%lld%lld%lld",&x,&y,&o),tree.update(1,tree.get_node(x),tree.get_node(y),o);
-        else if(command==3)scanf("%lld%lld",&x,&y),printf("%lld\n",tree.query(1,tree.get_node(x),tree.get_node(y)));
-    }
-    system("pause");
+    freopen("input.txt","r",stdin),freopen("output.txt","w",stdout);
+    solve();
+    fclose(stdin),fclose(stdout);
     return 0;
 }

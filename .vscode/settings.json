@@ -60,7 +60,8 @@
         "tuple": "cpp",
         "istream": "cpp",
         "ostream": "cpp",
-        "streambuf": "cpp"
+        "streambuf": "cpp",
+        "xlocale": "cpp"
     },
     "python.linting.pylintEnabled": false
 }
