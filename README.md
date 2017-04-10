@@ -11,6 +11,8 @@
 ".git"以及".github"文件夹是github代码仓库的配置文件。
 ".vscode"文件夹是VSCode的配置文件。
 "WTF"文件夹是一些乱搞的代码，如猴子排序等。
+"Test"文件夹是一些非OJ比赛的代码。
 # 特别注意
-后缀名为".cpp"的文件是在Windows 10操作系统下调试编译的，
-而后缀名为".cc"的文件是在Ubuntu Kylin 16.04 LTS操作系统下调试编译的。
+后缀名为".cpp"的文件是在Windows 10 Ver.1603操作系统下调试编译的，
+后缀名为".cc"的文件是在Ubuntu Kylin 16.04 LTS操作系统下调试编译的，
+后缀名为".inl"的文件是在NOI Linux(Ubuntu 16.04.2 LTS)操作系统下调试编译的。

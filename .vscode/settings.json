@@ -61,7 +61,8 @@
         "istream": "cpp",
         "ostream": "cpp",
         "streambuf": "cpp",
-        "xlocale": "cpp"
+        "xlocale": "cpp",
+        "map": "cpp"
     },
     "python.linting.pylintEnabled": false
 }
