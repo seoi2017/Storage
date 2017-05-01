@@ -1,72 +1,153 @@
-#include<bits/stdc++.h>//Accepted!
-#define mid(x,y) (x+y>>1)
-#define root (&seg[1])
-#define lson (now->lc)
-#define rson (now->rc)
-#define pushup (now->s=(now->lc->s+now->rc->s)%mod)
-using namespace std;typedef long long int ull_t;
-const int N=100010,M=100010;int n,m,top=0,ind[N];ull_t mod;
-struct segnode_t{ull_t s,add,mul;int l,r;segnode_t *lc,*rc,*fa;}seg[N<<2];
-inline int build(int l,int r){
-    int temp=++top;segnode_t *now=&seg[temp];
-    now->s=0,now->add=0,now->mul=1;now->l=l,now->r=r;now->fa=NULL;
-    if(l!=r)lson=&seg[build(l,mid(l,r))],rson=&seg[build(mid(l,r)+1,r)],lson->fa=rson->fa=now;
-    else lson=NULL,rson=NULL,ind[l]=temp;
-    return temp;
-}
-inline void over_build(segnode_t *now){
-    now->s=lson->s+rson->s;
-    if(now->fa!=NULL)over_build(now->fa);
-}
-inline void pushdown(segnode_t *now){
-    lson->mul=(lson->mul*now->mul)%mod,rson->mul=(rson->mul*now->mul)%mod;
-    lson->add=(lson->add*now->mul+now->add)%mod,rson->add=(rson->add*now->mul+now->add)%mod;
-    lson->s=(lson->s*now->mul+now->add*(lson->r-lson->l+1))%mod,rson->s=(rson->s*now->mul+now->add*(rson->r-rson->l+1))%mod;
-    now->add=0,now->mul=1;return;
-}
-inline void add_update(segnode_t *now,int l,int r,ull_t add){
-    if(now->l==l && now->r==r){
-        now->add=(now->add+add)%mod;
-        now->s=(((ull_t)(now->r-now->l+1)*add)%mod+now->s)%mod;
-        return;
+#pra\
+gma G++ optimize("O3")
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+#include<cmath>
+#define N 100005
+int P;//模数
+typedef long long ll_t;
+struct node_t{
+    ll_t sum,mul,add;
+    int l,r;
+    node_t *lc,*rc;
+};
+/*
+乘法原理:(a*x+b)*c+d=a*x*c+b*c+d
+*/
+inline int in(){
+    char a=getchar();
+    int x=0; 
+    while(a<'0' || a>'9')a=getchar();
+    while(a>='0' && a<='9'){
+        x=x*10+(a-'0');
+        a=getchar();
     }
-    if(now->add!=0 || now->mul!=1)pushdown(now);
-    if(l<=lson->r)add_update(lson,l,min(lson->r,r),add);
-    if(r>=rson->l)add_update(rson,max(rson->l,l),r,add);
-    pushup;return;
+    return x;
 }
-inline void mul_update(segnode_t *now,int l,int r,ull_t mul){
-    if(now->l==l && now->r==r){
-        now->mul=(now->mul*mul)%mod,now->add=(now->add*mul)%mod;
-        now->s=(now->s*mul)%mod;
-        return;
+inline ll_t inl(){
+    char a=getchar();
+    ll_t x=0;
+    while(a<'0' || a>'9')a=getchar();
+    while(a>='0' && a<='9'){
+        x=x*10+(a-'0');
+        a=getchar();
     }
-    if(now->add!=0 || now->mul!=1)pushdown(now);
-    if(l<=lson->r)mul_update(lson,l,min(lson->r,r),mul);
-    if(r>=rson->l)mul_update(rson,max(rson->l,l),r,mul);
-    pushup;return;
+    return x;
 }
-inline ull_t query(segnode_t *now,int l,int r){
-    if(now->l==l && now->r==r)return now->s%mod;
-    if(now->add!=0 || now->mul!=1)pushdown(now);
-    ull_t ans=0;
-    if(l<=lson->r)ans=(ans+query(lson,l,min(lson->r,r)))%mod;
-    if(r>=rson->l)ans=(ans+query(rson,max(rson->l,l),r))%mod;
-    pushup;return ans;
+inline void out(ll_t x){
+    int num=0;
+    char c[20];
+    while(x)c[++num]=(x%10)+48,x/=10;
+    while(num)putchar(c[num--]);
+    putchar('\n'); 
 }
-void solve(){
-    ull_t temp;scanf("%d%d%lld",&n,&m,&mod),build(1,n);
-    for(int i=1;i<=n;i++)scanf("%lld",&temp),seg[ind[i]].s=temp,over_build(seg[ind[i]].fa);
-    for(int i=1;i<=m;i++){
-        int x,y;ull_t z;scanf("%lld",&temp);
-        if(temp==1)/*mul*/scanf("%d%d%lld",&x,&y,&z),mul_update(root,x,y,z);
-        else if(temp==2)/*add*/scanf("%d%d%lld",&x,&y,&z),add_update(root,x,y,z);
-        else if(temp==3)/*query%mod*/scanf("%d%d",&x,&y),printf("%lld\n",query(root,x,y)%mod);
+//=================================
+struct Segment_Tree_t{
+    node_t seg[N<<2];
+    node_t *root;
+    int top;
+    node_t *build_in(int l,int r){//inside
+        node_t *now=&seg[++top];
+        now->l=l,now->r=r;
+        now->mul=1,now->add=0;
+        if(l==r){
+            //scanf("%lld",&now->sum);
+            now->sum=inl();
+            now->lc=now->rc=NULL;
+        }
+        else{
+            int mid=(l+r)>>1;
+            node_t *&lson=now->lc,*&rson=now->rc;
+            lson=build_in(l,mid);
+            rson=build_in(mid+1,r);
+            now->sum=(lson->sum+rson->sum)%P;
+        }
+        return now;
     }
-}
+    inline void build(int l,int r){//outside
+        top=0;
+        root=build_in(l,r);
+    }
+    inline int length(node_t *now){
+        return (now->r-now->l)+1;
+    }
+    inline void pushdown(node_t *now,node_t *lson,node_t *rson){
+        ll_t fmul=now->mul,fadd=now->add;
+        lson->mul=(lson->mul*fmul)%P;
+        rson->mul=(rson->mul*fmul)%P;
+        lson->add=(lson->add*fmul+fadd)%P;
+        rson->add=(rson->add*fmul+fadd)%P;
+        lson->sum=(lson->sum*fmul+length(lson)*fadd)%P;
+        rson->sum=(rson->sum*fmul+length(rson)*fadd)%P;
+        now->mul=1;
+        now->add=0;
+    }
+    void mul_update(node_t *now,int l,int r,ll_t s){
+        int nl=now->l,nr=now->r;
+        if(l<=nl && r>=nr){
+            now->mul=(now->mul*s)%P;
+            now->sum=(now->sum*s)%P;
+            now->add=(now->add*s)%P;
+            return;
+        }
+        node_t *lson=now->lc,*rson=now->rc;
+        if(now->add!=0||now->mul!=1)pushdown(now,lson,rson);
+        int mid=(nl+nr)>>1;
+        if(l<=mid)mul_update(lson,l,r,s);
+        if(r>mid)mul_update(rson,l,r,s);
+        now->sum=(lson->sum+rson->sum)%P;
+    }
+    void add_update(node_t *now,int l,int r,ll_t s){
+        int nl=now->l,nr=now->r;
+        if(l<=nl && r>=nr){
+            now->add=(now->add+s)%P;
+            now->sum=(now->sum+((length(now)*s)%P))%P;
+            return;
+        }
+        node_t *lson=now->lc,*rson=now->rc;
+        if(now->add!=0||now->mul!=1)pushdown(now,lson,rson);
+        int mid=(nl+nr)>>1;
+        if(l<=mid)add_update(lson,l,r,s);
+        if(r>mid)add_update(rson,l,r,s);
+        now->sum=(lson->sum+rson->sum)%P;
+    }
+    ll_t query(node_t *now,int l,int r){
+        int nl=now->l,nr=now->r;
+        if(l<=nl && r>=nr)return now->sum;
+        node_t *lson=now->lc,*rson=now->rc;
+        if(now->add!=0||now->mul!=1)pushdown(now,lson,rson);
+        ll_t ans=0;
+        int mid=(nl+nr)>>1;
+        if(l<=mid)ans=(ans+query(lson,l,r));
+        if(r>mid)ans=(ans+query(rson,l,r))%P;
+        now->sum=(lson->sum+rson->sum)%P;
+        return ans;
+    }
+}seg;
+//=========================================
+int n,m,c,a,b;
+ll_t s;
 int main(){
-    freopen("input.txt","r",stdin),freopen("output.txt","w",stdout);
-    solve();
-    fclose(stdin),fclose(stdout);
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
+    //scanf("%d%d%d",&n,&m,&P);
+    n=in(),m=in(),P=in();
+    seg.build(1,n);
+    for(int i=1;i<=m;i++){
+        //scanf("%d%d%d",&c,&a,&b);
+        c=in(),a=in(),b=in();
+        if(c==3)out(seg.query(seg.root,a,b));/*printf("%lld\n",seg.query(seg.root,a,b)%P);*///Query.
+        else{
+            //scanf("%lld",&s);
+            s=inl();
+            if(c==1)seg.mul_update(seg.root,a,b,s);//Mul.
+            else seg.add_update(seg.root,a,b,s);//Add.
+        }
+    }
+    fclose(stdin);
+    fclose(stdout);
     return 0;
 }
