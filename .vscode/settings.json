@@ -65,5 +65,6 @@
         "map": "cpp",
         "iostream": "cpp"
     },
+    "editor.fontSize": 14,
     "python.linting.pylintEnabled": false
 }

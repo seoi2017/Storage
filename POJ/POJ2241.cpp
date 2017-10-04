@@ -51,5 +51,5 @@ int main(){
         printf("Case %d: maximum height = %d\n",cnt,ans);
     }
     system("pause");
-    return 0;
-}
+    return 0; 
+}   
