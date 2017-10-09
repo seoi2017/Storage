@@ -1,27 +1,40 @@
-#include<iostream>
 #include<cstdio>
-#include<cstdlib>
-#include<algorithm>
 #include<cstring>
-#include<cmath>
+#include<iostream>
+#include<algorithm>
 using namespace std;
-unsigned long long a[1000007],ans;
-int T,n,vis[512];
-char str[1000007];
+
+char s[1000100];
+int cnt[100];
+int n;
+
+inline int calc(int a){
+	int ret=0;
+	while(a){
+		ret+=a/2;
+		a>>=1;
+	}
+	return ret;
+}
+
 int main(){
-    scanf("%d",&T);
-    while(T--){
-        memset(vis,0,sizeof(vis));
-        scanf("%d%s",&n,str);
-        for(int i=0;i<n;i++)
-            vis[str[i]]++;
-        a[1]=ans=1;
-        for(int i=2;i<=n;i++)
-            a[i]=a[i-1]*i,ans+=(a[i]*1ULL);
-        for(int i=0;i<512;i++)
-            if(vis[i]>1)ans=ans-a[vis[i]]+1ULL;
-        (ans+n)%2ULL==0ULL?printf("Lose\n"):printf("Win\n");
-    }
-    system("pause");
-    return 0;
+	freopen("game.in","r",stdin);
+	freopen("game.out","w",stdout);
+	int T=0;
+	scanf("%d",&T);
+	while(T--){
+		scanf("%d",&n);
+		scanf("%s",s);
+		memset(cnt,0,sizeof(cnt));
+		for (int i=0;i<n;++i) if (s[i]>='a'&&s[i]<='z') ++cnt[s[i]-'a'];
+		else ++cnt[s[i]-'A'+26];
+		int ans=0;
+		ans+=calc(n);
+		for (int i=0;i<52;++i) if (cnt[i]) ans-=calc(cnt[i]);
+		// printf("n=%d, ans=%d\n",n,ans);
+		if (n&1) puts("Win");
+		else if (ans) puts("Win");
+		else puts("Lose");
+	}
+	return 0;
 }
